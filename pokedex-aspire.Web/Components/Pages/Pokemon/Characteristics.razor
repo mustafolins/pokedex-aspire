@@ -1,0 +1,80 @@
+@inject pokedex_aspire.Services.IPokemonRepository pokemonRepository
+
+<section class="characteristics-panel" aria-labelledby="characteristics-heading">
+    <header class="characteristics-header">
+        <div>
+            <p>Individual trait archive</p>
+            <h2 id="characteristics-heading">Characteristic matrix</h2>
+        </div>
+        <span>@Profiles.Count profiles</span>
+    </header>
+
+    @if (IsLoading)
+    {
+        <div class="characteristics-loading" role="status">
+            <span aria-hidden="true"></span>
+            Indexing characteristic profiles...
+        </div>
+    }
+    else if (Profiles.Count == 0)
+    {
+        <p class="characteristics-empty">No characteristic profiles available.</p>
+    }
+    else
+    {
+        <div class="characteristics-console">
+            <div class="stat-tabs" role="tablist" aria-label="Highest stat">
+                @foreach (var stat in AvailableStats)
+                {
+                    var isSelected = stat == SelectedStat;
+                    <button type="button"
+                            id="stat-tab-@stat"
+                            role="tab"
+                            aria-selected="@(isSelected ? "true" : "false")"
+                            aria-controls="characteristic-readout"
+                            class="stat-tab @(isSelected ? "is-selected" : null)"
+                            @onclick="() => SelectStat(stat)">
+                        <span>@GetStatCode(stat)</span>
+                        <strong>@FormatStat(stat)</strong>
+                    </button>
+                }
+            </div>
+
+            <section id="characteristic-readout"
+                     class="characteristic-readout"
+                     role="tabpanel"
+                     aria-labelledby="stat-tab-@SelectedStat"
+                     aria-live="polite">
+                <header>
+                    <div>
+                        <span>Highest stat</span>
+                        <h3>@FormatStat(SelectedStat)</h3>
+                    </div>
+                    <strong>@SelectedCharacteristics.Count patterns</strong>
+                </header>
+
+                <ol class="trait-list">
+                    @foreach (var characteristic in SelectedCharacteristics)
+                    {
+                        <li>
+                            <div class="trait-index">
+                                <span>Gene</span>
+                                <strong>@characteristic.gene_modulo.ToString("D2")</strong>
+                            </div>
+                            <div class="trait-description">
+                                <h4>@GetEnglishDescription(characteristic)</h4>
+                                <span>Possible IV values</span>
+                            </div>
+                            <ul class="trait-values" aria-label="Possible individual values">
+                                @foreach (var value in characteristic.possible_values ?? [])
+                                {
+                                    <li>@value</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ol>
+            </section>
+        </div>
+    }
+</section>

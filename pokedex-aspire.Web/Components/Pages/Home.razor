@@ -1,0 +1,50 @@
+﻿@page "/"
+@using pokedex_aspire.Web.Components.Pages.Pokemon
+
+@inject pokedex_aspire.Services.IPokemonRepository pokemonRepository
+@rendermode InteractiveServer
+
+<PageTitle>Pokedex</PageTitle>
+
+<section class="pokedex-console" aria-labelledby="pokedex-title">
+    <header class="lookup-panel">
+        <div>
+            <p class="eyebrow">National database</p>
+            <h1 id="pokedex-title">Pokemon index</h1>
+        </div>
+
+        <label class="dex-search" for="pokemon-id">
+            <span class="dex-search__label">Entry number</span>
+            <span class="dex-search__field">
+                <span aria-hidden="true">#</span>
+                <input id="pokemon-id" type="number" @bind-value="PokemonId" min="1" />
+            </span>
+        </label>
+    </header>
+
+    <PokemonScanner PokemonId="PokemonId" PokemonSelected="LoadPokemonFromSelectionAsync" />
+
+    @if (pokemon != null)
+    {
+        <div class="dex-display">
+            <section class="identity-panel" aria-label="Pokemon profile">
+                <Sprites pokemon="pokemon" />
+                <Details pokemon="pokemon" />
+                <PokemonSpeech Pokemon="pokemon" />
+                <Species PokemonId="PokemonId" PokemonSelected="LoadPokemonFromSelectionAsync" />
+            </section>
+
+            <Moves moves="pokemon.moves" />
+            <Abilities abilities="pokemon.abilities" />
+            <Characteristics />
+            <Encounters PokemonId="PokemonId" />
+        </div>
+    }
+    else
+    {
+        <div class="loading-screen" role="status">
+            <span class="loading-screen__light" aria-hidden="true"></span>
+            <span>Scanning entry...</span>
+        </div>
+    }
+</section>

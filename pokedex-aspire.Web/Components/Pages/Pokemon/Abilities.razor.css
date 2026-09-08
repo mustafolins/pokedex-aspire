@@ -1,0 +1,315 @@
+.abilities-panel {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--dex-white);
+    background: var(--dex-ink);
+    border: 3px solid var(--dex-border);
+    border-radius: 7px;
+    box-shadow: 0 7px 0 rgba(17, 20, 21, 0.58);
+}
+
+.abilities-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 76px;
+    padding: 0.9rem 1.25rem;
+    color: var(--dex-ink);
+    background: var(--dex-cyan);
+    border-bottom: 3px solid var(--dex-border);
+}
+
+.abilities-header p,
+.abilities-header h2 {
+    margin: 0;
+}
+
+.abilities-header p {
+    margin-bottom: 0.15rem;
+    color: #26545d;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.abilities-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.abilities-header > span {
+    flex: 0 0 auto;
+    padding: 0.4rem 0.6rem;
+    color: var(--dex-cyan);
+    background: var(--dex-ink);
+    border: 2px solid var(--dex-border);
+    border-radius: 3px;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.abilities-console {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+    min-width: 0;
+}
+
+.ability-readout {
+    display: flex;
+    min-width: 0;
+    min-height: 330px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.4rem;
+    color: var(--dex-screen-dark);
+    background-color: var(--dex-screen);
+    background-image:
+        linear-gradient(rgba(26, 43, 29, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 43, 29, 0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
+    border-right: 3px solid var(--dex-border);
+    box-shadow: inset 0 0 25px rgba(26, 43, 29, 0.2);
+}
+
+.ability-label {
+    margin: 0 0 0.35rem;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ability-readout h3 {
+    margin: 0 0 0.7rem;
+    overflow-wrap: anywhere;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: capitalize;
+}
+
+.ability-description {
+    max-width: 62ch;
+    margin: 0 0 1.1rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.55;
+}
+
+.ability-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border-top: 2px solid var(--dex-screen-dark);
+    border-bottom: 2px solid var(--dex-screen-dark);
+}
+
+.ability-metrics div {
+    min-width: 0;
+    padding: 0.7rem 0.5rem;
+}
+
+.ability-metrics div + div {
+    border-left: 1px solid rgba(26, 43, 29, 0.24);
+}
+
+.ability-metrics dt {
+    margin-bottom: 0.2rem;
+    font-size: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ability-metrics dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.ability-effect {
+    max-width: 72ch;
+    margin: 0.9rem 0 0;
+    font-size: 0.64rem;
+    line-height: 1.55;
+}
+
+.ability-directory {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: 1rem;
+    background: var(--dex-panel);
+}
+
+.ability-directory ul {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ability-button {
+    display: grid;
+    grid-template-columns: 9px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 52px;
+    padding: 0.55rem 0.7rem;
+    color: var(--dex-white);
+    background: var(--dex-panel-light);
+    border: 1px solid #4c5354;
+    border-radius: 3px;
+    text-align: left;
+}
+
+.ability-button:hover,
+.ability-button.is-selected {
+    color: var(--dex-ink);
+    background: var(--dex-yellow);
+    border-color: var(--dex-yellow);
+}
+
+.ability-button__light {
+    width: 7px;
+    height: 7px;
+    background: var(--dex-green);
+    border-radius: 50%;
+}
+
+.ability-button__light.is-hidden {
+    background: var(--dex-yellow);
+}
+
+.ability-button.is-selected .ability-button__light.is-hidden {
+    background: var(--dex-red);
+    box-shadow: 0 0 8px rgba(220, 47, 63, 0.7);
+}
+
+.ability-button__name {
+    overflow-wrap: anywhere;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.ability-button__meta {
+    color: #b7bfc0;
+    font-size: 0.48rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ability-button:hover .ability-button__meta,
+.ability-button.is-selected .ability-button__meta {
+    color: rgba(23, 26, 27, 0.64);
+}
+
+.ability-directory__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    color: rgba(255, 253, 246, 0.58);
+    font-size: 0.48rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ability-directory__legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.ability-directory__legend i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.standard-light {
+    background: var(--dex-green);
+}
+
+.hidden-light {
+    background: var(--dex-yellow);
+}
+
+.ability-loading,
+.ability-placeholder,
+.abilities-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    min-height: 180px;
+    margin: 0;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ability-loading span,
+.ability-placeholder span,
+.abilities-empty span {
+    width: 9px;
+    height: 9px;
+    background: var(--dex-screen-dark);
+    border-radius: 50%;
+}
+
+.ability-loading span {
+    animation: ability-blink 900ms steps(2, end) infinite;
+}
+
+@keyframes ability-blink {
+    50% {
+        opacity: 0.2;
+    }
+}
+
+@media (max-width: 840px) {
+    .abilities-console {
+        grid-template-columns: 1fr;
+    }
+
+    .ability-readout {
+        min-height: 280px;
+        border-right: 0;
+        border-bottom: 3px solid var(--dex-border);
+    }
+}
+
+@media (max-width: 520px) {
+    .abilities-header {
+        min-height: 68px;
+        padding: 0.8rem;
+    }
+
+    .abilities-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .ability-readout,
+    .ability-directory {
+        padding: 0.85rem;
+    }
+
+    .ability-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .ability-metrics div + div {
+        border-top: 1px solid rgba(26, 43, 29, 0.24);
+        border-left: 0;
+    }
+}

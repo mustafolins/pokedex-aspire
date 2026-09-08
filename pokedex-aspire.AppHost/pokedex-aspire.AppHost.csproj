@@ -1,0 +1,23 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>77d2ddfa-61be-4f5c-a87e-f6487f8edb98</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\pokedex-aspire.ApiService\pokedex-aspire.ApiService.csproj" />
+    <ProjectReference Include="..\pokedex-aspire.SpeechService\pokedex-aspire.SpeechService.csproj" />
+    <ProjectReference Include="..\pokedex-aspire.Web\pokedex-aspire.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Python" Version="13.5.3" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.5.3" />
+  </ItemGroup>
+
+</Project>

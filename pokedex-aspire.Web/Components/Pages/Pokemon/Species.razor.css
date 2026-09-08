@@ -1,0 +1,176 @@
+.species-panel {
+    grid-column: 1 / -1;
+    min-width: 0;
+    padding-top: 1.25rem;
+    border-top: 3px solid var(--dex-ink);
+}
+
+.species-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+
+.species-header p,
+.species-header h3 {
+    margin: 0;
+}
+
+.species-header p {
+    margin-bottom: 0.2rem;
+    color: var(--dex-red-dark);
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.species-header h3 {
+    color: var(--dex-ink);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.species-status {
+    flex: 0 0 auto;
+    padding: 0.4rem 0.6rem;
+    color: var(--dex-screen);
+    background: var(--dex-screen-dark);
+    border-radius: 3px;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.species-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    background: rgba(23, 26, 27, 0.05);
+    border-top: 2px solid var(--dex-ink);
+    border-bottom: 2px solid var(--dex-ink);
+}
+
+.species-metrics div {
+    min-width: 0;
+    padding: 0.75rem;
+}
+
+.species-metrics div:not(:nth-child(3n + 1)) {
+    border-left: 1px solid rgba(23, 26, 27, 0.2);
+}
+
+.species-metrics div:nth-child(n + 4) {
+    border-top: 1px solid rgba(23, 26, 27, 0.2);
+}
+
+.species-metrics dt,
+.species-footer > div > span {
+    margin-bottom: 0.3rem;
+    color: #596061;
+    font-size: 0.54rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.species-metrics dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--dex-ink);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.species-footer {
+    padding-top: 0.85rem;
+}
+
+.egg-groups {
+    min-width: 0;
+}
+
+.egg-groups > span {
+    display: block;
+}
+
+.egg-groups ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.egg-groups li {
+    padding: 0.3rem 0.5rem;
+    color: var(--dex-ink);
+    background: var(--dex-yellow);
+    border: 1px solid var(--dex-ink);
+    border-radius: 3px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.species-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 112px;
+    color: var(--dex-screen-dark);
+    background: var(--dex-screen);
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.species-loading span {
+    width: 8px;
+    height: 8px;
+    background: var(--dex-screen-dark);
+    border-radius: 50%;
+    animation: species-loading 1s steps(2, end) infinite;
+}
+
+@keyframes species-loading {
+    50% {
+        opacity: 0.2;
+    }
+}
+
+@media (max-width: 600px) {
+    .species-header {
+        align-items: flex-start;
+    }
+
+    .species-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .species-metrics div:not(:nth-child(3n + 1)) {
+        border-left: 0;
+    }
+
+    .species-metrics div:nth-child(n + 4) {
+        border-top: 0;
+    }
+
+    .species-metrics div:nth-child(even) {
+        border-left: 1px solid rgba(23, 26, 27, 0.2);
+    }
+
+    .species-metrics div:nth-child(n + 3) {
+        border-top: 1px solid rgba(23, 26, 27, 0.2);
+    }
+
+    .species-footer {
+        padding-top: 0.85rem;
+    }
+
+}

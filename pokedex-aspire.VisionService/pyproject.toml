@@ -1,0 +1,26 @@
+[project]
+name = "pokedex-aspire-vision-service"
+version = "0.1.0"
+description = "Local Pokemon image classification service for pokedex-aspire"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.116,<1",
+    "pillow>=11.3,<13",
+    "python-multipart>=0.0.20,<1",
+    "torch>=2.8,<3",
+    "transformers>=4.57,<5",
+    "uvicorn[standard]>=0.35,<1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28,<1",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

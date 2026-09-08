@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row" aria-label="Pokedex status">
+            <div class="status-lights" aria-hidden="true">
+                <span class="status-light status-light--red"></span>
+                <span class="status-light status-light--yellow"></span>
+                <span class="status-light status-light--green"></span>
+            </div>
+
+            <div class="system-status">
+                <span class="system-status__pulse" aria-hidden="true"></span>
+                <span>Data link active</span>
+            </div>
+        </div>
+
+        <article class="content">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

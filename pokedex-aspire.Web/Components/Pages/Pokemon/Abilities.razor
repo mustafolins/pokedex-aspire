@@ -1,0 +1,87 @@
+<section class="abilities-panel" aria-labelledby="abilities-heading">
+    <header class="abilities-header">
+        <div>
+            <p>Trait analysis</p>
+            <h2 id="abilities-heading">Ability archive</h2>
+        </div>
+        <span>@Assignments.Count assigned</span>
+    </header>
+
+    @if (Assignments.Count == 0)
+    {
+        <div class="abilities-empty">
+            <span aria-hidden="true"></span>
+            <p>No ability records.</p>
+        </div>
+    }
+    else
+    {
+        <div class="abilities-console">
+            <section class="ability-readout" aria-live="polite">
+                @if (IsLoading)
+                {
+                    <div class="ability-loading" role="status">
+                        <span aria-hidden="true"></span>
+                        Retrieving ability data...
+                    </div>
+                }
+                else if (SelectedAbility is not null)
+                {
+                    <p class="ability-label">Selected ability</p>
+                    <h3>@FormatName(SelectedAbility.name)</h3>
+                    <p class="ability-description">@EnglishShortEffect</p>
+
+                    <dl class="ability-metrics">
+                        <div>
+                            <dt>Generation</dt>
+                            <dd>@FormatGeneration(SelectedAbility.generation?.name)</dd>
+                        </div>
+                        <div>
+                            <dt>Series</dt>
+                            <dd>@(SelectedAbility.is_main_series ? "Main" : "Side")</dd>
+                        </div>
+                        <div>
+                            <dt>Known users</dt>
+                            <dd>@(SelectedAbility.pokemon?.Count ?? 0)</dd>
+                        </div>
+                    </dl>
+
+                    <p class="ability-effect">@EnglishEffect</p>
+                }
+                else
+                {
+                    <div class="ability-placeholder">
+                        <span aria-hidden="true"></span>
+                        <p>Select an ability record.</p>
+                    </div>
+                }
+            </section>
+
+            <section class="ability-directory" aria-label="Assigned abilities">
+                <ul>
+                    @foreach (var assignment in Assignments)
+                    {
+                        var isSelected = assignment.ability?.name == SelectedAbility?.name;
+                        <li>
+                            <button type="button"
+                                    class="ability-button @(isSelected ? "is-selected" : null)"
+                                    aria-pressed="@(isSelected ? "true" : "false")"
+                                    @onclick="() => SelectAbilityAsync(assignment)">
+                                <span class="ability-button__light @(assignment.is_hidden ? "is-hidden" : null)" aria-hidden="true"></span>
+                                <span class="ability-button__name">@FormatName(assignment.ability?.name)</span>
+                                <span class="ability-button__meta">
+                                    @(assignment.is_hidden ? "Hidden" : $"Slot {assignment.slot}")
+                                </span>
+                            </button>
+                        </li>
+                    }
+                </ul>
+
+                <div class="ability-directory__legend">
+                    <span><i class="standard-light" aria-hidden="true"></i>Standard</span>
+                    <span><i class="hidden-light" aria-hidden="true"></i>Hidden</span>
+                </div>
+            </section>
+        </div>
+    }
+</section>

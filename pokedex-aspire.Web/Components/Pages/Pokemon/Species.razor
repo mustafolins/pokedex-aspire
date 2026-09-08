@@ -1,0 +1,65 @@
+@inject pokedex_aspire.Services.IPokemonRepository pokemonRepository
+
+<section class="species-panel" aria-labelledby="species-heading" aria-live="polite">
+    @if (Specie != null)
+    {
+        <header class="species-header">
+            <div>
+                <p>Biology scan</p>
+                <h3 id="species-heading">Species research</h3>
+            </div>
+            <span class="species-status">@Classification</span>
+        </header>
+
+        <dl class="species-metrics">
+            <div>
+                <dt>Base happiness</dt>
+                <dd>@Specie.base_happiness</dd>
+            </div>
+            <div>
+                <dt>Capture rate</dt>
+                <dd>@Specie.capture_rate</dd>
+            </div>
+            <div>
+                <dt>Color</dt>
+                <dd>@(Specie.color?.name ?? "Unknown")</dd>
+            </div>
+            <div>
+                <dt>Body shape</dt>
+                <dd>@(Specie.shape?.name ?? "Unknown")</dd>
+            </div>
+            <div>
+                <dt>Habitat</dt>
+                <dd>@(Specie.habitat?.name ?? "Unknown")</dd>
+            </div>
+            <div>
+                <dt>Growth rate</dt>
+                <dd>@(Specie.growth_rate?.name ?? "Unknown")</dd>
+            </div>
+        </dl>
+
+        <div class="species-footer">
+            <div class="egg-groups">
+                <span>Egg groups</span>
+                <ul>
+                    @foreach (var eggGroup in Specie.egg_groups ?? [])
+                    {
+                        <li>@(eggGroup.name ?? "Unknown")</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <Evolution EvolutionChainUrl="@(Specie.evolution_chain?.url)"
+                   PokemonId="PokemonId"
+                   PokemonSelected="PokemonSelected" />
+    }
+    else
+    {
+        <div class="species-loading" role="status">
+            <span aria-hidden="true"></span>
+            Reading species data...
+        </div>
+    }
+</section>
+

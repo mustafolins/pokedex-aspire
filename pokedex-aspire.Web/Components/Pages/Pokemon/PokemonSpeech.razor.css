@@ -1,0 +1,125 @@
+.speech-module {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-width: 0;
+    padding: 0.75rem;
+    color: var(--dex-white);
+    background: var(--dex-panel);
+    border: 2px solid var(--dex-ink);
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.speech-readout {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+}
+
+.speech-light {
+    width: 10px;
+    height: 10px;
+    background: #6e7778;
+    border: 2px solid var(--dex-ink);
+    border-radius: 50%;
+}
+
+.speech-light.is-speaking {
+    background: var(--dex-cyan);
+    box-shadow: 0 0 10px rgba(89, 217, 241, 0.8);
+    animation: speech-pulse 1s steps(2, end) infinite;
+}
+
+.speech-light.is-error {
+    background: var(--dex-red);
+    box-shadow: 0 0 8px rgba(220, 47, 63, 0.75);
+}
+
+.speech-readout p,
+.speech-readout h3 {
+    margin: 0;
+}
+
+.speech-readout p {
+    margin-bottom: 0.15rem;
+    color: var(--dex-cyan);
+    font-size: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.speech-readout h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.speech-status {
+    padding-left: 0.7rem;
+    color: rgba(255, 253, 246, 0.68);
+    border-left: 1px solid rgba(255, 253, 246, 0.22);
+    font-size: 0.56rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.speech-controls {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.45rem;
+}
+
+.speech-control {
+    min-height: 40px;
+    padding: 0.45rem 0.7rem;
+    color: var(--dex-white);
+    background: #0f1213;
+    border: 2px solid #050606;
+    border-radius: 3px;
+    box-shadow: 0 3px 0 #050606;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.speech-control--primary {
+    color: var(--dex-ink);
+    background: var(--dex-cyan);
+}
+
+.speech-control:hover:not(:disabled) {
+    color: var(--dex-ink);
+    background: var(--dex-yellow);
+}
+
+.speech-control:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+
+@keyframes speech-pulse {
+    50% {
+        opacity: 0.35;
+    }
+}
+
+@media (max-width: 560px) {
+    .speech-module {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .speech-readout {
+        grid-template-columns: 12px minmax(0, 1fr) auto;
+    }
+
+    .speech-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}

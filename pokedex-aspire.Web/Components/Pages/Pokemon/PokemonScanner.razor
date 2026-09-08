@@ -1,0 +1,106 @@
+<section class="scanner-panel" aria-labelledby="scanner-heading">
+    <header class="scanner-header">
+        <div>
+            <p>Visual recognition</p>
+            <h2 id="scanner-heading">Pokemon scanner</h2>
+        </div>
+        <span class="scanner-model-status @ModelStatusClass" aria-live="polite">@ModelStatus</span>
+    </header>
+
+    <div class="scanner-console">
+        <div class="scanner-viewport">
+            <video @ref="VideoElement"
+                   class="scanner-video @(HasPreview ? "is-hidden" : null)"
+                   autoplay
+                   muted
+                   playsinline></video>
+            <canvas @ref="CanvasElement"
+                    class="scanner-preview @(!HasPreview ? "is-hidden" : null)"
+                    aria-label="Captured Pokemon image"></canvas>
+
+            @if (!CameraActive && !HasPreview)
+            {
+                <div class="scanner-standby">
+                    <span class="scanner-reticle" aria-hidden="true"></span>
+                    <strong>Scanner standby</strong>
+                </div>
+            }
+
+            @if (IsAnalyzing)
+            {
+                <div class="scanner-progress" role="status">
+                    <span aria-hidden="true"></span>
+                    Analyzing frame
+                </div>
+            }
+
+            <span class="scan-line" aria-hidden="true"></span>
+        </div>
+
+        <section class="scanner-results" aria-labelledby="matches-heading" aria-live="polite">
+            <header>
+                <span>Recognition output</span>
+                <h3 id="matches-heading">Candidate matches</h3>
+            </header>
+
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                <p class="scanner-error" role="alert">@ErrorMessage</p>
+            }
+            else if (Predictions.Count == 0)
+            {
+                <div class="scanner-empty">
+                    <span aria-hidden="true"></span>
+                    <p>Awaiting image capture</p>
+                </div>
+            }
+            else
+            {
+                <ol class="prediction-list">
+                    @foreach (var prediction in Predictions)
+                    {
+                        <li>
+                            <button type="button"
+                                    class="prediction-button @(prediction.PokemonId == PokemonId ? "is-current" : null)"
+                                    disabled="@(!prediction.CanSelect)"
+                                    @onclick="() => SelectPredictionAsync(prediction)">
+                                <span class="prediction-rank">@prediction.Rank.ToString("D2")</span>
+                                <span class="prediction-name">
+                                    <strong>@prediction.Label</strong>
+                                    <small>@prediction.ActionLabel</small>
+                                </span>
+                                <span class="prediction-score">@prediction.Confidence.ToString("P1")</span>
+                                <span class="confidence-track" aria-hidden="true">
+                                    <span style="width: @prediction.ConfidenceWidth"></span>
+                                </span>
+                            </button>
+                        </li>
+                    }
+                </ol>
+            }
+        </section>
+    </div>
+
+    <footer class="scanner-controls">
+        <button type="button" class="scanner-control"
+                disabled="@(CameraActive || IsAnalyzing)"
+                @onclick="StartCameraAsync">Start camera</button>
+        <button type="button" class="scanner-control scanner-control--capture"
+                disabled="@(!CameraActive || IsAnalyzing)"
+                @onclick="CaptureAsync">Capture</button>
+        <button type="button" class="scanner-control"
+                disabled="@(!HasPreview || IsAnalyzing)"
+                @onclick="StartCameraAsync">Retake</button>
+        <label class="scanner-control scanner-control--file @(IsAnalyzing ? "is-disabled" : null)" for="pokemon-image-upload">
+            Choose image
+        </label>
+        <input @ref="FileInputElement"
+               id="pokemon-image-upload"
+               class="scanner-file-input"
+               type="file"
+               accept="image/jpeg,image/png,image/webp"
+               capture="environment"
+               disabled="@IsAnalyzing"
+               @onchange="IdentifyFileAsync" />
+    </footer>
+</section>

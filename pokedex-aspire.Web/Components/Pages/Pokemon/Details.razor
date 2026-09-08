@@ -1,0 +1,26 @@
+@using pokedex_aspire.Models;
+
+<section class="pokemon-details" aria-labelledby="pokemon-name">
+    <p class="record-label">Entry #@pokemon.id.ToString("D3")</p>
+    <h2 id="pokemon-name">@pokemon.name</h2>
+
+    <dl class="pokemon-metrics">
+        <div>
+            <dt>Height</dt>
+            <dd>@pokemon.height <span>dm</span></dd>
+        </div>
+        <div>
+            <dt>Weight</dt>
+            <dd>@pokemon.weight <span>hg</span></dd>
+        </div>
+        <div>
+            <dt>Base XP</dt>
+            <dd>@pokemon.base_experience</dd>
+        </div>
+    </dl>
+</section>
+
+@code {
+    [Parameter]
+    public required PokemonDto pokemon { get; set; }
+}

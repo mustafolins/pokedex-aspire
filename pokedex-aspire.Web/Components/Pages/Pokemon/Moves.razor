@@ -1,0 +1,76 @@
+<section class="moves-panel" aria-labelledby="moves-heading">
+    <header class="moves-header">
+        <div>
+            <p>Battle archive</p>
+            <h2 id="moves-heading">Move data</h2>
+        </div>
+        <span>@(moves?.Count ?? 0) records</span>
+    </header>
+
+    <div class="moves-console">
+        <section class="move-readout" aria-live="polite">
+            @if (SelectedMove != null)
+            {
+                <p class="readout-label">Selected move</p>
+                <h3>@SelectedMove.name</h3>
+                <span class="type-chip">@(SelectedMove.type?.name ?? "Unknown")</span>
+                <p class="move-description">
+                    @(SelectedMove.effect_entries?.FirstOrDefault(effectEntry => effectEntry.language?.name == "en" )?.effect ?? "No description available.")
+                </p>
+
+                <dl class="move-metrics">
+                    <div>
+                        <dt>Accuracy</dt>
+                        <dd>@(SelectedMove.accuracy?.ToString() ?? "--")</dd>
+                    </div>
+                    <div>
+                        <dt>Power</dt>
+                        <dd>@(SelectedMove.power?.ToString() ?? "--")</dd>
+                    </div>
+                    <div>
+                        <dt>PP</dt>
+                        <dd>@(SelectedMove.pp?.ToString() ?? "--")</dd>
+                    </div>
+                </dl>
+
+                <p class="damage-class">Class // @(SelectedMove.damage_class?.name ?? "Unknown")</p>
+            }
+            else
+            {
+                <div class="readout-empty">
+                    <span aria-hidden="true"></span>
+                    <p>Awaiting move selection</p>
+                </div>
+            }
+        </section>
+
+        <section class="move-directory" aria-label="Available moves">
+            <ul>
+                @foreach (var move in (moves ?? [])
+                    .Skip((CurrentPage - 1) * MovesPerPage)
+                    .Take(MovesPerPage))
+                {
+                    var isSelected = move.move?.name == SelectedMove?.name;
+                    <li>
+                        <button type="button"
+                                class="move-button @(isSelected ? "is-selected" : null)"
+                                aria-pressed="@(isSelected ? "true" : "false")"
+                                @onclick="() => OnMoveClickedAsync(move)">
+                            <span class="move-button__light" aria-hidden="true"></span>
+                            <span>@(move.move?.name ?? "Unknown move")</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+
+            <div class="move-pager">
+                <button type="button" class="pager-button" aria-label="Previous move page"
+                        @onclick="PreviousPage" disabled="@(CurrentPage == 1)">&larr;</button>
+                <span>Page <strong>@CurrentPage.ToString("D2")</strong></span>
+                <button type="button" class="pager-button" aria-label="Next move page"
+                        @onclick="NextPage"
+                        disabled="@(moves == null || (CurrentPage * MovesPerPage) >= moves.Count)">&rarr;</button>
+            </div>
+        </section>
+    </div>
+</section>

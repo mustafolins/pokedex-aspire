@@ -1,0 +1,72 @@
+@inject pokedex_aspire.Services.IPokemonRepository pokemonRepository
+
+<section class="encounters-panel" aria-labelledby="encounters-heading">
+    <header class="encounters-header">
+        <div>
+            <p>Habitat signals</p>
+            <h2 id="encounters-heading">Wild encounters</h2>
+        </div>
+        <span>@Locations.Count zones</span>
+    </header>
+
+    @if (IsLoading)
+    {
+        <div class="encounters-loading" role="status">
+            <span aria-hidden="true"></span>
+            Scanning habitat records...
+        </div>
+    }
+    else if (Locations.Count == 0)
+    {
+        <div class="encounters-empty">
+            <span aria-hidden="true">--</span>
+            <p>No wild encounter records.</p>
+        </div>
+    }
+    else
+    {
+        <ol class="encounter-list">
+            @foreach (var location in VisibleLocations)
+            {
+                <li class="encounter-row">
+                    <div class="encounter-location">
+                        <span>Area @GetAreaNumber(location).ToString("D2")</span>
+                        <h3>@FormatName(location.Name)</h3>
+                        <ul aria-label="Encounter methods">
+                            @foreach (var method in location.Methods)
+                            {
+                                <li>@FormatName(method)</li>
+                            }
+                        </ul>
+                    </div>
+
+                    <dl class="encounter-metrics">
+                        <div>
+                            <dt>Level range</dt>
+                            <dd>@location.LevelRange</dd>
+                        </div>
+                        <div>
+                            <dt>Peak chance</dt>
+                            <dd>@location.PeakChance<span>%</span></dd>
+                        </div>
+                        <div>
+                            <dt>Game versions</dt>
+                            <dd>@location.VersionCount</dd>
+                        </div>
+                    </dl>
+                </li>
+            }
+        </ol>
+
+        @if (TotalPages > 1)
+        {
+            <div class="encounter-pager">
+                <button type="button" aria-label="Previous encounter page"
+                        @onclick="PreviousPage" disabled="@(CurrentPage == 1)">&larr;</button>
+                <span>Page <strong>@CurrentPage.ToString("D2")</strong> / @TotalPages.ToString("D2")</span>
+                <button type="button" aria-label="Next encounter page"
+                        @onclick="NextPage" disabled="@(CurrentPage == TotalPages)">&rarr;</button>
+            </div>
+        }
+    }
+</section>

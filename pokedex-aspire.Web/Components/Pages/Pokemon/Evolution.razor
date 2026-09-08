@@ -1,0 +1,52 @@
+@inject pokedex_aspire.Services.IPokemonRepository pokemonRepository
+
+<section class="evolution-panel" aria-labelledby="evolution-heading">
+    <header class="evolution-header">
+        <div>
+            <span>Evolution route</span>
+            <h4 id="evolution-heading">Evolution chain</h4>
+        </div>
+        <strong>@EvolutionChainLabel</strong>
+    </header>
+
+    @if (IsLoading)
+    {
+        <div class="evolution-loading" role="status">
+            <span aria-hidden="true"></span>
+            Tracing evolution chain...
+        </div>
+    }
+    else if (Stages.Count > 0)
+    {
+        <ol class="evolution-stages">
+            @foreach (var stage in Stages)
+            {
+                <li class="evolution-stage">
+                    <span class="stage-label">Stage @stage.Number.ToString("D2")</span>
+                    <ul>
+                        @foreach (var entry in stage.Entries)
+                        {
+                            <li class="evolution-entry">
+                                <button type="button"
+                                        class="evolution-button @(entry.PokemonId == PokemonId ? "is-current" : null)"
+                                        disabled="@(entry.PokemonId is null || entry.PokemonId == PokemonId)"
+                                        aria-current="@(entry.PokemonId == PokemonId ? "true" : "false")"
+                                        @onclick="() => SelectEvolutionAsync(entry)">
+                                    <span class="evolution-light" aria-hidden="true"></span>
+                                    <span>
+                                        <strong>@entry.Name</strong>
+                                        <small>@entry.Requirement</small>
+                                    </span>
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ol>
+    }
+    else
+    {
+        <p class="evolution-empty">No evolution route recorded.</p>
+    }
+</section>

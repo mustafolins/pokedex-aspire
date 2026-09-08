@@ -1,0 +1,20 @@
+@using pokedex_aspire.Models;
+
+@if (pokemon.sprites != null)
+{
+    <figure class="pokemon-sprite" role="img" aria-label="@pokemon.name sprite">
+        <span class="sprite-status" aria-hidden="true">Live</span>
+        <div class="sprite-stage">
+            <img src="@pokemon.sprites.front_default" alt="" aria-hidden="true" />
+            <img src="@pokemon.sprites.back_default" alt="" aria-hidden="true" />
+            <img src="@pokemon.sprites.front_shiny" alt="" aria-hidden="true" />
+            <img src="@pokemon.sprites.back_shiny" alt="" aria-hidden="true" />
+        </div>
+        <figcaption>Sprite feed</figcaption>
+    </figure>
+}
+
+@code {
+    [Parameter]
+    public required PokemonDto pokemon { get; set; }
+}

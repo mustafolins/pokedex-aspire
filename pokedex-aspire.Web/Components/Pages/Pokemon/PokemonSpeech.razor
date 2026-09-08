@@ -1,0 +1,49 @@
+<section class="speech-module" aria-labelledby="speech-heading">
+    <audio @ref="CryAudioElement"
+        src="@CryAudioSource"
+        preload="none"
+        hidden
+        @onplaying="OnCryPlaying"
+        @onended="OnCryEnded"
+        @onerror="OnCryError"></audio>
+    <audio @ref="OverviewAudioElement"
+        src="@OverviewAudioSource"
+        preload="none"
+        hidden
+        @onplaying="OnOverviewPlaying"
+        @onended="OnOverviewEnded"
+        @onerror="OnAudioError"></audio>
+    <audio @ref="SpeciesAudioElement"
+        src="@SpeciesAudioSource"
+        preload="none"
+        hidden
+        @onplaying="OnSpeciesPlaying"
+        @onended="OnSpeciesEnded"
+        @onerror="OnAudioError"></audio>
+
+    <div class="speech-readout">
+        <span class="speech-light @StatusClass" aria-hidden="true"></span>
+        <div>
+            <p>Voice module</p>
+            <h3 id="speech-heading">Audio briefing</h3>
+        </div>
+        <span class="speech-status" aria-live="polite">@StatusMessage</span>
+    </div>
+
+    <div class="speech-controls">
+        <button type="button"
+                class="speech-control speech-control--primary"
+                aria-label="Read @DisplayName Pokedex entry aloud"
+                disabled="@IsReadDisabled"
+                @onclick="PlayBriefingAsync">
+            Read entry
+        </button>
+        <button type="button"
+                class="speech-control"
+                aria-label="Stop reading Pokedex entry"
+                disabled="@(!IsActive)"
+                @onclick="StopBriefingAsync">
+            Stop
+        </button>
+    </div>
+</section>
