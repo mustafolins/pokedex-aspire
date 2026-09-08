@@ -39,7 +39,7 @@ jobs:
           python-version: "3.12"
           working-directory: pokedex-aspire.VisionService
           enable-cache: true
-          cache-dependency-glob: pokedex-aspire.VisionService/uv.lock
+          cache-dependency-glob: uv.lock
 
       - name: Restore locked Python environment
         working-directory: pokedex-aspire.VisionService

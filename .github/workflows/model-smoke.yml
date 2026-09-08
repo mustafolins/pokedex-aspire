@@ -39,7 +39,7 @@ jobs:
           python-version: "3.12"
           working-directory: pokedex-aspire.VisionService
           enable-cache: true
-          cache-dependency-glob: pokedex-aspire.VisionService/uv.lock
+          cache-dependency-glob: uv.lock
 
       - name: Restore locked Python environment
         working-directory: pokedex-aspire.VisionService
@@ -75,8 +75,8 @@ jobs:
       - name: Discover service endpoints
         run: |
           description="$(aspire describe --format Json --non-interactive --nologo | sed -n '/^{/,$p')"
-          web_url="$(printf '%s\n' "$description" | jq -er '[.resources[] | select(.displayName == "webfrontend") | .urls[] | select(.name == "https" and .isInternal == true) | .url][0]')"
-          speech_url="$(printf '%s\n' "$description" | jq -er '[.resources[] | select(.displayName == "speechservice") | .urls[] | select(.name == "https" and .isInternal == true) | .url][0]')"
+          web_url="$(printf '%s\n' "$description" | jq -er '[.resources[] | select(.displayName == "webfrontend") | .urls[] | select(.name == "http" and .isInternal == true) | .url][0]')"
+          speech_url="$(printf '%s\n' "$description" | jq -er '[.resources[] | select(.displayName == "speechservice") | .urls[] | select(.name == "http" and .isInternal == true) | .url][0]')"
           printf 'WEB_URL=%s\n' "$web_url" >> "$GITHUB_ENV"
           printf 'SPEECH_URL=%s\n' "$speech_url" >> "$GITHUB_ENV"
 
@@ -111,12 +111,12 @@ jobs:
 
       - name: Warm and verify vision model
         run: |
-          curl --insecure --fail-with-body --silent --show-error --request POST "$WEB_URL/vision/warmup"
-          curl --insecure --fail-with-body --silent --show-error \
+          curl --fail-with-body --silent --show-error --request POST "$WEB_URL/vision/warmup"
+          curl --fail-with-body --silent --show-error \
             --retry 60 --retry-delay 10 --retry-max-time 600 \
             --output "$RUNNER_TEMP/vision-ready.json" \
             "$WEB_URL/vision/ready"
-          curl --insecure --fail-with-body --silent --show-error --max-time 120 \
+          curl --fail-with-body --silent --show-error --max-time 120 \
             --form "image=@$RUNNER_TEMP/generated-pikachu.png;type=image/png" \
             --output "$RUNNER_TEMP/vision-prediction.json" \
             "$WEB_URL/vision/identify"
@@ -127,7 +127,7 @@ jobs:
 
       - name: Verify speech model and cache
         run: |
-          curl --insecure --fail-with-body --silent --show-error --max-time 600 \
+          curl --fail-with-body --silent --show-error --max-time 600 \
             --dump-header "$RUNNER_TEMP/speech-first.headers" \
             --output "$RUNNER_TEMP/pikachu-overview.wav" \
             "$SPEECH_URL/speech/pokemon/25/overview-v1"
@@ -144,7 +144,7 @@ jobs:
               assert audio.getframerate() == 24_000
               assert audio.getnframes() > 24_000
           PY
-          curl --insecure --fail-with-body --silent --show-error --max-time 60 \
+          curl --fail-with-body --silent --show-error --max-time 60 \
             --dump-header "$RUNNER_TEMP/speech-second.headers" \
             --output /dev/null \
             "$SPEECH_URL/speech/pokemon/25/overview-v1"

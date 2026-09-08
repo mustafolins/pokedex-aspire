@@ -1,13 +1,25 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+var isContinuousIntegration = string.Equals(
+    Environment.GetEnvironmentVariable("CI"),
+    "true",
+    StringComparison.OrdinalIgnoreCase);
+Action<Aspire.Hosting.ProjectResourceOptions> configureProjectLaunchProfile = options =>
+{
+    if (isContinuousIntegration)
+    {
+        options.LaunchProfileName = "http";
+    }
+};
+
 var cache = builder.AddRedis("cache");
 
-var apiService = builder.AddProject<Projects.pokedex_aspire_ApiService>("apiservice")
+var apiService = builder.AddProject<Projects.pokedex_aspire_ApiService>("apiservice", configureProjectLaunchProfile)
     .WithHttpHealthCheck("/health")
     .WithReference(cache)
     .WaitFor(cache);
 
-var speechService = builder.AddProject<Projects.pokedex_aspire_SpeechService>("speechservice")
+var speechService = builder.AddProject<Projects.pokedex_aspire_SpeechService>("speechservice", configureProjectLaunchProfile)
     .WithHttpHealthCheck("/health")
     .WithReference(cache)
     .WaitFor(cache)
@@ -32,7 +44,7 @@ var visionService = builder.AddUvicornApp(
             "huggingface"))
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Projects.pokedex_aspire_Web>("webfrontend")
+builder.AddProject<Projects.pokedex_aspire_Web>("webfrontend", configureProjectLaunchProfile)
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(cache)
