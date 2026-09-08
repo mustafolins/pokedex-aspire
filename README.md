@@ -191,6 +191,16 @@ popd
 
 The Python tests cover API validation and class-to-PokeAPI mapping without loading the classifier weights. Real model inference is validated separately with an image through `/vision/identify`.
 
+## Automation
+
+GitHub Actions keeps routine pull-request checks lightweight while exercising the local AI models separately:
+
+- **CI** restores the locked `uv` environment, runs the Python tests, builds the .NET solution, and runs the Aspire distributed tests on pull requests and pushes to `main`. It does not download model weights.
+- **Dependency Review** rejects pull requests that introduce dependencies with moderate-or-higher known vulnerabilities.
+- **CodeQL** analyzes C# and Python changes on pull requests, pushes to `main`, and a weekly schedule.
+- **AI Model Smoke** runs weekly or on demand. It caches both model directories, classifies a generated Pikachu-like fixture, validates the pinned classifier revision, synthesizes a WAV with Kokoro, and verifies the Redis speech-cache hit.
+- **Dependabot** checks NuGet, `uv`, and GitHub Actions weekly. Minor and patch updates are grouped; major updates remain separate.
+
 ## Configuration
 
 ### Speech

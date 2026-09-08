@@ -1,0 +1,174 @@
+name: AI Model Smoke
+
+on:
+  schedule:
+    - cron: "41 5 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-model-smoke
+  cancel-in-progress: true
+
+env:
+  ASPIRE_VERSION: 13.5.3
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+  VISION_MODEL_REVISION: 78fccd021ff34aff277f85e8066ed6a01aee2488
+
+jobs:
+  smoke:
+    name: Load and exercise AI models
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@v10
+        with:
+          python-version: "3.12"
+          working-directory: pokedex-aspire.VisionService
+          enable-cache: true
+          cache-dependency-glob: pokedex-aspire.VisionService/uv.lock
+
+      - name: Restore locked Python environment
+        working-directory: pokedex-aspire.VisionService
+        run: uv sync --locked
+
+      - name: Restore AI model cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.local/share/pokedex-aspire/models/kokoro.onnx
+            ~/.local/share/pokedex-aspire/models/huggingface
+          key: ai-models-${{ runner.os }}-${{ hashFiles('pokedex-aspire.SpeechService/KokoroPokemonSpeechSynthesizer.cs', 'pokedex-aspire.VisionService/classifier.py') }}
+          restore-keys: |
+            ai-models-${{ runner.os }}-
+
+      - name: Install Aspire CLI
+        run: dotnet tool install --global Aspire.Cli --version "$ASPIRE_VERSION"
+
+      - name: Start Aspire application
+        run: >-
+          aspire start
+          --apphost pokedex-aspire.AppHost/pokedex-aspire.AppHost.csproj
+          --format Json
+          --non-interactive
+          --nologo
+
+      - name: Wait for application resources
+        run: |
+          aspire wait visionservice --timeout 300 --non-interactive --nologo
+          aspire wait webfrontend --timeout 300 --non-interactive --nologo
+          aspire wait speechservice --timeout 300 --non-interactive --nologo
+
+      - name: Discover service endpoints
+        run: |
+          description="$(aspire describe --format Json --non-interactive --nologo | sed -n '/^{/,$p')"
+          web_url="$(printf '%s\n' "$description" | jq -er '[.resources[] | select(.displayName == "webfrontend") | .urls[] | select(.name == "https" and .isInternal == true) | .url][0]')"
+          speech_url="$(printf '%s\n' "$description" | jq -er '[.resources[] | select(.displayName == "speechservice") | .urls[] | select(.name == "https" and .isInternal == true) | .url][0]')"
+          printf 'WEB_URL=%s\n' "$web_url" >> "$GITHUB_ENV"
+          printf 'SPEECH_URL=%s\n' "$speech_url" >> "$GITHUB_ENV"
+
+      - name: Generate vision fixture
+        working-directory: pokedex-aspire.VisionService
+        run: |
+          uv run --frozen python - <<'PY'
+          import os
+          from PIL import Image, ImageDraw
+
+          image = Image.new("RGB", (512, 512), "white")
+          draw = ImageDraw.Draw(image)
+          yellow = (248, 208, 48)
+          draw.polygon([(165, 155), (105, 15), (225, 125)], fill=yellow, outline="black", width=8)
+          draw.polygon([(347, 155), (407, 15), (287, 125)], fill=yellow, outline="black", width=8)
+          draw.polygon([(105, 15), (135, 85), (177, 54)], fill="black")
+          draw.polygon([(407, 15), (377, 85), (335, 54)], fill="black")
+          draw.ellipse((116, 80, 396, 350), fill=yellow, outline="black", width=8)
+          draw.ellipse((166, 160, 210, 216), fill="black")
+          draw.ellipse((302, 160, 346, 216), fill="black")
+          draw.ellipse((178, 170, 189, 184), fill="white")
+          draw.ellipse((314, 170, 325, 184), fill="white")
+          draw.ellipse((126, 225, 194, 285), fill=(225, 45, 45), outline="black", width=4)
+          draw.ellipse((318, 225, 386, 285), fill=(225, 45, 45), outline="black", width=4)
+          draw.polygon([(248, 222), (264, 222), (256, 233)], fill="black")
+          draw.arc((220, 224, 256, 263), 0, 85, fill="black", width=4)
+          draw.arc((256, 224, 292, 263), 95, 180, fill="black", width=4)
+          draw.ellipse((165, 305, 347, 485), fill=yellow, outline="black", width=8)
+          draw.polygon([(348, 330), (430, 280), (402, 350), (462, 365), (382, 455), (400, 382), (338, 370)], fill=yellow, outline="black")
+          image.save(os.path.join(os.environ["RUNNER_TEMP"], "generated-pikachu.png"))
+          PY
+
+      - name: Warm and verify vision model
+        run: |
+          curl --insecure --fail-with-body --silent --show-error --request POST "$WEB_URL/vision/warmup"
+          curl --insecure --fail-with-body --silent --show-error \
+            --retry 60 --retry-delay 10 --retry-max-time 600 \
+            --output "$RUNNER_TEMP/vision-ready.json" \
+            "$WEB_URL/vision/ready"
+          curl --insecure --fail-with-body --silent --show-error --max-time 120 \
+            --form "image=@$RUNNER_TEMP/generated-pikachu.png;type=image/png" \
+            --output "$RUNNER_TEMP/vision-prediction.json" \
+            "$WEB_URL/vision/identify"
+          jq -e --arg revision "$VISION_MODEL_REVISION" \
+            '(.modelRevision == $revision) and ([.predictions[].pokemonId] | index(25) != null)' \
+            "$RUNNER_TEMP/vision-prediction.json"
+          jq '{modelRevision, device, latencyMs, predictions}' "$RUNNER_TEMP/vision-prediction.json"
+
+      - name: Verify speech model and cache
+        run: |
+          curl --insecure --fail-with-body --silent --show-error --max-time 600 \
+            --dump-header "$RUNNER_TEMP/speech-first.headers" \
+            --output "$RUNNER_TEMP/pikachu-overview.wav" \
+            "$SPEECH_URL/speech/pokemon/25/overview-v1"
+          grep --ignore-case --quiet '^content-type: audio/wav' "$RUNNER_TEMP/speech-first.headers"
+          grep --ignore-case --quiet '^x-speech-cache: MISS' "$RUNNER_TEMP/speech-first.headers"
+          uv run --project pokedex-aspire.VisionService --frozen python - <<'PY'
+          import os
+          import wave
+
+          path = os.path.join(os.environ["RUNNER_TEMP"], "pikachu-overview.wav")
+          with wave.open(path, "rb") as audio:
+              assert audio.getnchannels() == 1
+              assert audio.getsampwidth() == 2
+              assert audio.getframerate() == 24_000
+              assert audio.getnframes() > 24_000
+          PY
+          curl --insecure --fail-with-body --silent --show-error --max-time 60 \
+            --dump-header "$RUNNER_TEMP/speech-second.headers" \
+            --output /dev/null \
+            "$SPEECH_URL/speech/pokemon/25/overview-v1"
+          grep --ignore-case --quiet '^x-speech-cache: HIT' "$RUNNER_TEMP/speech-second.headers"
+
+      - name: Upload diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ai-model-smoke-diagnostics
+          path: |
+            ~/.aspire/logs/*.log
+            ${{ runner.temp }}/vision-ready.json
+            ${{ runner.temp }}/vision-prediction.json
+            ${{ runner.temp }}/speech-first.headers
+            ${{ runner.temp }}/speech-second.headers
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Stop Aspire application
+        if: always()
+        continue-on-error: true
+        run: >-
+          aspire stop
+          --apphost pokedex-aspire.AppHost/pokedex-aspire.AppHost.csproj
+          --non-interactive
+          --nologo
