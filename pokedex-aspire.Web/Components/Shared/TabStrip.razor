@@ -1,0 +1,34 @@
+@typeparam TItem where TItem : notnull
+
+<div class="tab-strip" role="tablist" aria-label="@AriaLabel">
+    @for (var index = 0; index < Items.Count; index++)
+    {
+        var item = Items[index];
+        var selected = IsSelected(item);
+
+        <button id="@GetTabId(index)"
+                class="tab-strip__tab"
+                type="button"
+                role="tab"
+                aria-selected="@(selected ? "true" : "false")"
+                aria-controls="@GetPanelId(index)"
+                @onclick="() => SelectItemAsync(item)">
+            <span class="tab-strip__index" aria-hidden="true">@((index + 1).ToString("D2"))</span>
+            <span>@ItemText(item)</span>
+        </button>
+    }
+</div>
+
+@for (var index = 0; index < Items.Count; index++)
+{
+    var item = Items[index];
+
+    <div id="@GetPanelId(index)"
+         class="tab-strip__panel"
+         role="tabpanel"
+         aria-labelledby="@GetTabId(index)"
+         hidden="@(!IsSelected(item))">
+        @ChildContent(item)
+    </div>
+}
+

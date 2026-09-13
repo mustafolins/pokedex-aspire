@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Testing" Version="13.5.3" />
+    <PackageReference Include="bunit" Version="2.10.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit" Version="4.4.0" />
     <PackageReference Include="NUnit.Analyzers" Version="4.10.0" />
@@ -20,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\pokedex-aspire.AppHost\pokedex-aspire.AppHost.csproj" />
     <ProjectReference Include="..\pokedex-aspire.SpeechService\pokedex-aspire.SpeechService.csproj" />
+    <ProjectReference Include="..\pokedex-aspire.Web\pokedex-aspire.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

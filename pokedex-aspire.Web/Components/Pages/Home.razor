@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using pokedex_aspire.Web.Components.Pages.Pokemon
+@using pokedex_aspire.Web.Components.Shared
 
 @inject pokedex_aspire.Services.IPokemonRepository pokemonRepository
 @rendermode InteractiveServer
@@ -22,29 +23,38 @@
         </label>
     </header>
 
-    <PokemonScanner PokemonId="PokemonId" PokemonSelected="LoadPokemonFromSelectionAsync" />
+    <TabStrip Id="pokedex-views"
+              AriaLabel="Pokedex views"
+              Items="PokedexViews"
+              ItemText="GetViewLabel"
+              @bind-SelectedItem="activeView"
+              Context="view">
+        @if (view == PokedexView.Scanner)
+        {
+            <PokemonScanner PokemonId="PokemonId" PokemonSelected="LoadPokemonFromSelectionAsync" />
+        }
+        else if (pokemon != null)
+        {
+            <div class="dex-display">
+                <section class="identity-panel" aria-label="Pokemon profile">
+                    <Sprites pokemon="pokemon" />
+                    <Details pokemon="pokemon" />
+                    <PokemonSpeech Pokemon="pokemon" />
+                    <Species PokemonId="PokemonId" PokemonSelected="LoadPokemonFromSelectionAsync" />
+                </section>
 
-    @if (pokemon != null)
-    {
-        <div class="dex-display">
-            <section class="identity-panel" aria-label="Pokemon profile">
-                <Sprites pokemon="pokemon" />
-                <Details pokemon="pokemon" />
-                <PokemonSpeech Pokemon="pokemon" />
-                <Species PokemonId="PokemonId" PokemonSelected="LoadPokemonFromSelectionAsync" />
-            </section>
-
-            <Moves moves="pokemon.moves" />
-            <Abilities abilities="pokemon.abilities" />
-            <Characteristics />
-            <Encounters PokemonId="PokemonId" />
-        </div>
-    }
-    else
-    {
-        <div class="loading-screen" role="status">
-            <span class="loading-screen__light" aria-hidden="true"></span>
-            <span>Scanning entry...</span>
-        </div>
-    }
+                <Moves moves="pokemon.moves" />
+                <Abilities abilities="pokemon.abilities" />
+                <Characteristics />
+                <Encounters PokemonId="PokemonId" />
+            </div>
+        }
+        else
+        {
+            <div class="loading-screen" role="status">
+                <span class="loading-screen__light" aria-hidden="true"></span>
+                <span>Scanning entry...</span>
+            </div>
+        }
+    </TabStrip>
 </section>
