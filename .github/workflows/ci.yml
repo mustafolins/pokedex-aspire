@@ -34,7 +34,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Set up uv and Python
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.1.0
         with:
           python-version: "3.12"
           working-directory: pokedex-aspire.VisionService
