@@ -5,7 +5,7 @@ description = "Local Pokemon image classification service for pokedex-aspire"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "fastapi>=0.116,<1",
-    "pillow>=11.3,<13",
+    "pillow>=11.3,<14",
     "python-multipart>=0.0.20,<1",
     "torch>=2.8,<3",
     "transformers>=4.57,<5",
